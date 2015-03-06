@@ -4,3 +4,4 @@ iptables_rules_path: /etc/iptables/iptables.rules
 iptables_filter_deny_all: yes
 iptables_filter_open_tcp_ports: []
 iptables_filter_rules: []
+iptables_nat_rules: []

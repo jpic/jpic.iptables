@@ -35,3 +35,15 @@
 -A INPUT -j LOGDROP
 {% endif %}
 COMMIT
+
+{% if iptables_nat_rules %}
+*nat
+:PREROUTING ACCEPT [36965:7369874]
+:INPUT ACCEPT [15854:2793795]
+:OUTPUT ACCEPT [3826:257063]
+:POSTROUTING ACCEPT [3829:257315]
+{% for rule in iptables_nat_rules %}
+{{ rule }}
+{% endfor %}
+COMMIT
+{% endif %}
