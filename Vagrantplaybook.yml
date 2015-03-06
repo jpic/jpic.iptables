@@ -6,5 +6,5 @@
     pacman_mirrors:
     - http://arch.yourlabs.org/
   - role: .
-    iptables_allowed_tcp_ports:
+    iptables_filter_open_tcp_ports:
     - 22

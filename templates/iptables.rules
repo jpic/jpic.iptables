@@ -22,15 +22,15 @@
 -A INPUT -p icmp --icmp-type echo-request -m limit --limit 30/min --limit-burst 8 -j ACCEPT
 -A INPUT -p icmp --icmp-type echo-request -j LOGDROP
 
-{% for port in iptables_allowed_tcp_ports %}
+{% for port in iptables_filter_open_tcp_ports %}
 -A TCP -p tcp -m tcp --dport {{ port }} -j ACCEPT
 {% endfor %}
 
-{% for rule in iptables_extra_rules %}
+{% for rule in iptables_filter_rules %}
 {{ rule }}
 {% endfor %}
 
-{% if iptables_deny_all %}
+{% if iptables_filter_deny_all %}
 -A INPUT -m conntrack --ctstate INVALID -j LOGDROP
 -A INPUT -j LOGDROP
 {% endif %}
