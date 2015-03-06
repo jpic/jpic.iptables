@@ -1,0 +1,10 @@
+---
+
+- hosts: all
+  roles:
+  - role: jpic.pacman
+    pacman_mirrors:
+    - http://arch.yourlabs.org/
+  - role: .
+    iptables_allowed_tcp_ports:
+    - 22

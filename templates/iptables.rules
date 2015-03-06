@@ -1,0 +1,37 @@
+*filter
+:INPUT ACCEPT [0:0]
+:FORWARD DROP [0:0]
+:LOGDROP - [0:0]
+:OUTPUT ACCEPT [384:67874]
+:TCP - [0:0]
+:UDP - [0:0]
+
+-A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -i lo -j ACCEPT
+
+-A LOGDROP -p tcp -m limit --limit 5/min -j LOG --log-prefix "Denied TCP: " --log-level 7
+-A LOGDROP -p udp -m limit --limit 5/min -j LOG --log-prefix "Denied UDP: " --log-level 7
+-A LOGDROP -p icmp -m limit --limit 5/min -j LOG --log-prefix "Denied ICMP: " --log-level 7
+-A LOGDROP -p udp -j REJECT --reject-with icmp-port-unreachable
+-A LOGDROP -p tcp -j REJECT --reject-with tcp-reset
+-A LOGDROP -j DROP
+
+-A INPUT -p tcp --tcp-flags FIN,SYN,RST,ACK SYN -m conntrack --ctstate NEW -j TCP
+
+-A INPUT -p icmp -m icmp --icmp-type 8 -m conntrack --ctstate NEW -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -m limit --limit 30/min --limit-burst 8 -j ACCEPT
+-A INPUT -p icmp --icmp-type echo-request -j LOGDROP
+
+{% for port in iptables_allowed_tcp_ports %}
+-A TCP -p tcp -m tcp --dport {{ port }} -j ACCEPT
+{% endfor %}
+
+{% for rule in iptables_extra_rules %}
+{{ rule }}
+{% endfor %}
+
+{% if iptables_deny_all %}
+-A INPUT -m conntrack --ctstate INVALID -j LOGDROP
+-A INPUT -j LOGDROP
+{% endif %}
+COMMIT

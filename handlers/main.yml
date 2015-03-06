@@ -1,0 +1,5 @@
+---
+
+- name: reload iptables
+  shell: iptables-restore < '{{ iptables_rules_path }}'
+  sudo: yes

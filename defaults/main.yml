@@ -1,0 +1,6 @@
+---
+
+iptables_rules_path: /etc/iptables/iptables.rules
+iptables_deny_all: yes
+iptables_allowed_tcp_ports: []
+iptables_extra_rules: []
