@@ -1,16 +1,9 @@
 ---
-- pacman: name=iptables state=installed
-  sudo: yes
 
-- template:
-    src: iptables.rules
-    dest: '{{ iptables_rules_path }}'
-    mode: 0700
-  sudo: yes
-  notify: reload iptables
+- include: 'arch.yml'
+  when: ansible_os_family == 'Archlinux'
 
-- service:
-    name: iptables
-    enabled: yes
-    state: started
-  sudo: yes
+- iptables:
+    args: '{{ item }}'
+  with_items: iptables
+  notify: iptables-save

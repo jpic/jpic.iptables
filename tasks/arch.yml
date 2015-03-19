@@ -1,0 +1,4 @@
+---
+
+- pacman: name=iptables state=installed
+  sudo: yes

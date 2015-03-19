@@ -1,10 +1,44 @@
 ---
 
 - hosts: all
+  sudo: yes
+  vars:
+  - lxc_network: 10.0.3.0/24
+
   roles:
   - role: jpic.pacman
     pacman_mirrors:
     - http://arch.yourlabs.org/
+
   - role: .
-    iptables_filter_open_tcp_ports:
-    - 22
+    iptables:
+    - name: Open SSH
+      chain: INPUT
+      rule: -m tcp -p tcp --dport 22 -j ACCEPT
+
+    - name: DNAT/SNAT everything going out of eth0
+      table: nat
+      chain: POSTROUTING
+      rule:
+      - o eth0
+      - j MASQUERADE
+
+    - name: DNAT/SNAT everything going out of LXC's subnet
+      table: nat
+      chain: POSTROUTING
+      rule: -s {{ lxc_network }} -j MASQUERADE
+
+  tasks:
+  - name: Needed for LXC containers to get an ip from the host
+    iptables:
+      name: Maybe covering for the MASQUERADE ?
+      table: mangle
+      chain: POSTROUTING
+      rule:
+      - m udp
+      - s {{ lxc_network }}
+      - p udp
+      - dport 68
+      - j CHECKSUM
+      - checksum-fill
+    notify: iptables-save

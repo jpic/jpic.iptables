@@ -1,5 +1,19 @@
 ---
 
-- name: reload iptables
-  shell: iptables-restore < '{{ iptables_rules_path }}'
-  sudo: yes
+- name: iptables-save
+  shell: iptables-save > {{ iptables_rules_path }}
+  notify: iptables-secure
+
+- name: iptables-secure
+  file:
+    dest: '{{ iptables_rules_path }}'
+    mode: '{{ iptables_rules_mode }}'
+    owner: '{{ iptables_rules_owner }}'
+    group: '{{ iptables_rules_group }}'
+  notify: iptables-enable
+
+- name: iptables-enable
+  service:
+    name: iptables
+    enabled: yes
+    state: started
