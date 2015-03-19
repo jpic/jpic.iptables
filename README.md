@@ -1,7 +1,12 @@
 jpic.iptables
 =============
 
-Yet another iptables role, with safe defaults and arch linux support.
+Anti-template iptables role.
+
+Example usage
+-------------
+
+.. include: Vagrantplaybook.yml
 
 License
 -------
